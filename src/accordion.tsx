@@ -2,7 +2,6 @@
 import * as React from 'react';
 import {Content as HeaderContent} from './list';
 import IconChevron from './icons/icon-chevron';
-import Box from './box';
 import * as styles from './accordion.css';
 import Stack from './stack';
 import {BaseTouchable} from './touchable';
@@ -25,11 +24,13 @@ const ACCORDION_TRANSITION_DURATION_IN_MS = 400;
 type AccordionContextType = {
     index: ReadonlyArray<number>;
     toggle: (item: number) => void;
+    small: boolean;
 };
 
 const AccordionContext = React.createContext<AccordionContextType>({
     index: [],
     toggle: () => {},
+    small: false,
 });
 
 const useAccordionContext = (): AccordionContextType => React.useContext(AccordionContext);
@@ -154,7 +155,7 @@ const AccordionItemContent = React.forwardRef<TouchableElement, AccordionItemCon
     ) => {
         const panelContainerRef = React.useRef<HTMLDivElement | null>(null);
         const itemRef = React.useRef<HTMLDivElement | null>(null);
-        const {index, toggle} = useAccordionContext();
+        const {index, toggle, small} = useAccordionContext();
         const variant = useThemeVariant();
         const labelId = React.useId();
         const panelId = React.useId();
@@ -197,10 +198,11 @@ const AccordionItemContent = React.forwardRef<TouchableElement, AccordionItemCon
                     aria-label={computedAriaLabel}
                     aria-labelledby={ariaLabelledby}
                 >
-                    <Box paddingX={16}>
+                    <div className={styles.accordionContentPadding}>
                         <HeaderContent
                             labelId={labelId}
                             {...props}
+                            small={small}
                             right={({centerY}) => (
                                 <Inline
                                     space={4}
@@ -219,7 +221,7 @@ const AccordionItemContent = React.forwardRef<TouchableElement, AccordionItemCon
                                 </Inline>
                             )}
                         />
-                    </Box>
+                    </div>
                 </BaseTouchable>
                 <CSSTransition
                     in={isOpen}
@@ -231,9 +233,9 @@ const AccordionItemContent = React.forwardRef<TouchableElement, AccordionItemCon
                 >
                     <div className={styles.panelContainer} ref={panelContainerRef}>
                         <div className={styles.panel} role="region" aria-labelledby={labelId} id={panelId}>
-                            <Box paddingX={16} paddingBottom={16}>
+                            <div className={styles.accordionContentPadding} style={{paddingBottom: 16}}>
                                 {content}
-                            </Box>
+                            </div>
                         </div>
                     </div>
                 </CSSTransition>
@@ -259,6 +261,7 @@ type AccordionBaseProps = {
     dataAttributes?: DataAttributes;
     onChange?: (index: number, value: boolean) => void;
     role?: string;
+    small?: boolean;
 };
 
 type SingleOpenProps = {
@@ -283,6 +286,7 @@ export const Accordion = ({
     onChange,
     singleOpen,
     role,
+    small = false,
 }: AccordionProps): JSX.Element => {
     const [indexList, toggle] = useAccordionState({
         value: index,
@@ -294,7 +298,7 @@ export const Accordion = ({
     const lastIndex = childrenContent.length - 1;
 
     return (
-        <AccordionContext.Provider value={{index: indexList, toggle}}>
+        <AccordionContext.Provider value={{index: indexList, toggle, small}}>
             <div
                 role={role}
                 {...getPrefixedDataAttributes({testid: 'Accordion', ...dataAttributes, accordion: true})}
@@ -303,9 +307,9 @@ export const Accordion = ({
                     <React.Fragment key={index}>
                         {child}
                         {index < lastIndex && (
-                            <Box paddingX={16}>
+                            <div className={styles.accordionContentPadding}>
                                 <Divider />
-                            </Box>
+                            </div>
                         )}
                     </React.Fragment>
                 ))}
@@ -340,6 +344,7 @@ export const BoxedAccordion = ({
     onChange,
     singleOpen,
     role,
+    small = false,
 }: AccordionProps): JSX.Element => {
     const [indexList, toggle] = useAccordionState({
         value: index,
@@ -349,7 +354,7 @@ export const BoxedAccordion = ({
     });
 
     return (
-        <AccordionContext.Provider value={{index: indexList, toggle}}>
+        <AccordionContext.Provider value={{index: indexList, toggle, small}}>
             <Stack
                 space={16}
                 role={role}
