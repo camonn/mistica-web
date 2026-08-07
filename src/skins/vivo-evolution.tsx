@@ -711,7 +711,7 @@ export const getVivoEvolutionSkin: GetKnownSkin = () => {
             container: '24px',
             indicator: '24px',
             chip: '24px',
-            tag: '10px',
+            tag: '8px',
             input: '16px',
             popup: '16px',
             sheet: '24px',
@@ -824,6 +824,7 @@ export const getVivoEvolutionSkin: GetKnownSkin = () => {
                 left: {mobile: 16, desktop: 40},
                 right: {mobile: 16, desktop: 40},
             },
+            boxedDefaultPadding: {left: {mobile: 16, desktop: 24}, right: {mobile: 16, desktop: 24}},
             responsiveLayoutMargin: {mobile: 8, desktop: 48},
         },
     };
